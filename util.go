@@ -1,19 +1,14 @@
 package tfidf
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
-	"regexp"
 )
 
 // init initializes the package by pre-compiling the regex for the stripping method
 func init() {
-	r, err := regexp.Compile(`[\s\p{Zs}]{2,}`)
-
-	if nil != err {
-		panic(err)
-	}
-
+	r, _ := regexp.Compile(`\s{2,}`)
 	stripSpacesRegex = r
 }
 
@@ -39,7 +34,7 @@ func StripSpacesLoop(t string) string {
 				lsp = true
 				return ' '
 			}
-			if lsp || '\n' == r {
+			if lsp {
 				return -1
 			} else {
 				lsp = true

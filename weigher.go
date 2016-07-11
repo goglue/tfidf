@@ -1,30 +1,52 @@
 package tfidf
 
-type FrequencyTable interface {
+import (
+	"math"
+	"strings"
+)
+
+// New receives the document string, the document storage and returns the weigher structure
+func New(ds DocumentStorage) *Weigher {
+	return &Weigher{ds}
 }
 
+// DocumentStorage encapsulates the functionality that is needed to perform the algorithm
+type DocumentStorage interface {
+	// DocumentsWith receives a t term parameter and returns an unsigned integer of the documents count containing t
+	DocumentsWith(t string) uint
+	// Documents returns the total amount of documents within the storage
+	Documents() uint
+}
+
+// Weigher encapsulates the given document and the document storage where these values need to be given
 type Weigher struct {
-	ft FrequencyTable
+	// d the given document string
+	ds DocumentStorage
 }
 
-type term struct {
-	term string
-	tfIdf float64
-}
+// Score calculates the TF-IDF of a given document string. The string should contain words separated by one space only
+func (w *Weigher) Score(d string) map[string]float64 {
+	terms := strings.Split(d, " ")
 
-func (t *term) String() string {
-	return t.term
-}
+	// tf terms frequencies within the given document
+	tf := make(map[string]int)
+	// tt total terms count within a given document
+	tt := len(terms)
 
-func (t *term) TfIdf() float64 {
-	return t.tfIdf
-}
+	for i := 0; i < tt; i++ {
+		tf[terms[i]]++
+	}
 
-func (w *Weigher) StringsScore(d string) []term {
+	// tft tf(t) term frequency of t
+	tfidf := make(map[string]float64, len(tf))
 
-	return nil
-}
+	for term, freq := range tf {
+		tft := float64(freq) / float64(tt)
+		idf := math.Log(
+			float64(w.ds.Documents()) / float64(w.ds.DocumentsWith(term)),
+		)
+		tfidf[term] = tft * idf
+	}
 
-func New() *Weigher {
-	return &Weigher{}
+	return tfidf
 }
