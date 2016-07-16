@@ -8,20 +8,14 @@ import (
 
 func TestWeigher_StringsScore(t *testing.T) {
 	ds := new(documentStorageMock)
-	d := `abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc
-	abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc
-	abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc
-	abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc
-	abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc abc cat cat cat`
+	d := `this is another document` // 4 words
 
 	dc := StripSpacesLoop(d)
 	w := New(ds)
 	r := w.Score(dc)
 
-	expectedAbc := 8.934030160816897
-	expectedCat := 0.2763102111592855
-	assert.Equal(t, expectedAbc, r["abc"])
-	assert.Equal(t, expectedCat, r["cat"])
+	expectedAnother := 0.0752574989159953
+	assert.Equal(t, expectedAnother, r["another"])
 }
 
 type documentStorageMock struct {
@@ -29,9 +23,16 @@ type documentStorageMock struct {
 }
 
 func (d *documentStorageMock) Documents() uint {
-	return uint(10000000)
+	return uint(2)
 }
 
-func (d *documentStorageMock) DocumentsWith(string) uint {
-	return 1000
+var dw = map[string]uint{
+	"this":     2,
+	"is":       2,
+	"another":  1,
+	"document": 0,
+}
+
+func (d *documentStorageMock) DocumentsWith(t string) uint {
+	return dw[t]
 }

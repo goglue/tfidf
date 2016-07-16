@@ -42,9 +42,16 @@ func (w *Weigher) Score(d string) map[string]float64 {
 
 	for term, freq := range tf {
 		tft := float64(freq) / float64(tt)
-		idf := math.Log(
-			float64(w.ds.Documents()) / float64(w.ds.DocumentsWith(term)),
-		)
+		dwt := float64(w.ds.DocumentsWith(term))
+
+		var idf float64
+		if 0 == dwt {
+			idf = 0
+		} else {
+			idf = math.Log10(
+				float64(w.ds.Documents()) / float64(w.ds.DocumentsWith(term)),
+			)
+		}
 		tfidf[term] = tft * idf
 	}
 
