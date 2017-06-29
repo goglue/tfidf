@@ -4,7 +4,7 @@
 
 ### Install
 ```
-go get github.com/gogle/tfidf
+go get github.com/goglue/tfidf
 ```
 
 ### How to use
