@@ -49,7 +49,7 @@ func (w *Weigher) Score(d string) map[string]float64 {
 			idf = 0
 		} else {
 			idf = math.Log10(
-				float64(w.ds.Documents()) / float64(w.ds.DocumentsWith(term)),
+				float64(w.ds.Documents()) / dwt,
 			)
 		}
 		tfidf[term] = tft * idf
